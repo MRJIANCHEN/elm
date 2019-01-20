@@ -20,7 +20,7 @@
         			<p>{{item.address}}</p>
         		</li>
         	</ul>
-        </section> 
+        </section>
     </div>
 </template>
 
@@ -39,7 +39,7 @@
         },
         created(){
         	this.inputAdress = this.addAddress ? this.addAddress : this.inputAdress
-        	
+
         },
         mounted(){
 
@@ -54,7 +54,7 @@
         	// 		}
         	// 	}
         	// });
-        	
+
         },
         mixins: [getImgPath],
         components: {
@@ -92,10 +92,10 @@
         }
     }
 </script>
-  
+
 <style lang="scss" scoped>
     @import 'src/style/mixin';
-  
+
     .rating_page{
         position: absolute;
         top: 0;
@@ -125,7 +125,7 @@
     	button{
     		display:block;
     		width:3rem;
-    		background:#3199e8;
+    		background:#ffba1f;
     		@include sc(.7rem,#fff);
     		@include borderRadius(5px);
     	}

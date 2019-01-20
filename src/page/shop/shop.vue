@@ -1,12 +1,21 @@
  <template>
   <div>
+    <div id="head-top">
+      <div class="wrap">
+          <svg width="0.9rem" height="0.9rem" xmlns="http://www.w3.org/2000/svg" version="1.1">
+            <circle cx="8" cy="8" r="7" stroke="rgb(255,255,255)" stroke-width="1" fill="none"></circle>
+            <line x1="14" y1="14" x2="20" y2="20" style="stroke:rgb(255,255,255);stroke-width:2"></line>
+          </svg>
+        <input type="text" v-model="search" placeholder="search">
+        <i class="update"></i>
+      </div>
+    </div>
     <section v-if="!showLoading" class="shop_container">
       <div style="width:100%;height:6.5rem;">
         <swiper :options="swiperOption">
           <swiper-slide v-for="(slide, index) in swiperSlides" :key="index">
-              <img style="width:100%;height:100%;" :src='slide' />
+            <img style="width:100%;height:100%;" :src="slide">
           </swiper-slide>
-          <div class="swiper-pagination" slot="pagination"></div>
         </swiper>
       </div>
       <div class="slide">
@@ -25,12 +34,7 @@
                   :class="{activity_menu: index == menuIndex}"
                   @click="chooseMenu(index)"
                 >
-                  <img :src="getImgPath(item.icon_url)" v-if="item.icon_url">
                   <span>{{item.name}}</span>
-                  <span
-                    class="category_num"
-                    v-if="categoryNum[index]&&item.type==1"
-                  >{{categoryNum[index]}}</span>
                 </li>
               </ul>
             </section>
@@ -110,6 +114,10 @@
               </ul>
             </section>
           </section>
+          <section class="message">
+            <i></i>
+            <span>反馈</span>
+          </section>
           <section class="buy_cart_container">
             <section @click="toggleCartList" class="cart_icon_num">
               <div
@@ -142,13 +150,13 @@
           </section>
           <transition name="toggle-cart">
             <section class="cart_food_list" v-show="showCartList&&cartFoodList.length">
-              <header>
-                <h4>购物车</h4>
+              <div class="remind">送货上门另收2元服务费</div>
+              <header>       
                 <div @click="clearCart">
                   <svg>
                     <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#cart-remove"></use>
                   </svg>
-                  <span class="clear_cart">清空</span>
+                  <span class="clear_cart">清空购物车</span>
                 </div>
               </header>
               <section class="cart_food_details" id="cartFood">
@@ -353,11 +361,10 @@ export default {
     return {
       geohash: "", //geohash位置信息
       swiperOption: {
-        pagination: {
-          el: ".swiper-pagination"
-        },
-        autoplay: true,//可选选项，自动滑动
+        autoplay: true, //可选选项，自动滑动
+        loop: true
       },
+      search: "",
       swiperSlides: [
         "/static/home1.png",
         "/static/home1.png",
@@ -879,14 +886,49 @@ export default {
     transform: scale(1);
   }
 }
-.swiper-container{
-    width: 100%;
-    height: 100%;
+#head-top {
+  background: #fff;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 1.95rem;
+  padding: 0.2rem 0.3rem;
+  .wrap {
+    height: 1.55rem;
+    padding: 0 0.3rem;
+    border-radius: 0.5rem;
+    background: #8e8e93;
+    display: flex;
+    display: -webkit-flex;
+    justify-content: space-between;
+    align-items: center;
+    .search {
+      width: 0.7rem;
+      height: 0.7rem;
+    }
+    .update{
+      width:0.9rem;
+      height: 0.9rem;
+      @include bis('../../../static/timg.png');
+    }
+    input{
+      width:80%;
+      height: 1.4rem;
+      border: none;
+      outline: none;
+      background: #8E8E93;
+    }
+  }
+}
+.swiper-container {
+  width: 100%;
+  height: 100%;
 }
 .slide {
   height: 1.2rem;
   padding: 0 0.2rem;
-  margin:0.3rem 0;
+  margin: 0.3rem 0;
   background: #ffba1f;
   display: flex;
   flex-direction: row;
@@ -907,6 +949,7 @@ export default {
   }
 }
 .shop_container {
+  margin-top: 1.95rem;
   display: flex;
   flex-direction: column;
   position: absolute;
@@ -1103,10 +1146,10 @@ export default {
       }
     }
     .activity_menu {
-      border-left: 0.15rem solid #3190e8;
       background-color: #fff;
       span:nth-of-type(1) {
         font-weight: bold;
+        @include sc(0.6rem, #FFBA1F);
       }
     }
   }
@@ -1276,13 +1319,36 @@ export default {
     }
   }
 }
+.message{
+  position:absolute;
+  right: 0.3rem;
+  bottom: 0.5rem;
+  height: 2.4rem;
+  width:1.6rem;
+  display:flex;
+  flex-direction: column;
+  justify-content: flex-start; 
+  align-items: center;
+  i{
+    width: 1.3rem;
+    height: 1.2rem;
+    @include bis('../../../static/message.png');
+  }
+  span{
+    color:#333;
+    font-size: 12px;
+    line-height: 1rem;
+    text-align:center;
+  }
+}
 .buy_cart_container {
   background-color: #3d3d3f;
-  bottom: 1rem;
+  bottom: 0.8rem;
   z-index: 13;
   display: flex;
   @include borderRadius(1rem);
   @include cl;
+  left:47%;
   @include wh(12rem, 2rem);
   .cart_icon_num {
     flex: 1;
@@ -1294,7 +1360,7 @@ export default {
       border: 0.18rem solid #444;
       border-radius: 50%;
       left: 0.5rem;
-      top: -0.7rem;
+      top: -0.5rem;
       .cart_icon {
         @include wh(1.2rem, 1.2rem);
       }
@@ -1302,11 +1368,11 @@ export default {
         position: absolute;
         top: -0.25rem;
         right: -0.25rem;
-        background-color: #ff461d;
+        background-color: #FF0303;
         line-height: 0.7rem;
         text-align: center;
         border-radius: 50%;
-        border: 0.025rem solid #ff461d;
+        border: 0.025rem solid #FF0303;
         min-width: 0.7rem;
         height: 0.7rem;
         @include sc(0.5rem, #fff);
@@ -1317,7 +1383,7 @@ export default {
       animation: mymove 0.5s ease-in-out;
     }
     .cart_icon_activity {
-      background-color: #3190e8;
+      background-color: #FFBA1F;
     }
     .cart_num {
       @include ct;
@@ -1353,22 +1419,36 @@ export default {
     }
   }
   .gotopay_acitvity {
-    background-color: #4cd964;
+    background-color: #ffba1f;
   }
 }
 .cart_food_list {
+
   position: fixed;
   width: 100%;
   padding-bottom: 2rem;
   z-index: 12;
   bottom: 0;
   left: 0;
+     border-top-left-radius: 0.8rem;
+    border-top-right-radius: 0.8rem;
   background-color: #fff;
+  .remind{
+    border-top-left-radius: 0.8rem;
+    border-top-right-radius: 0.8rem;
+    background: #ffba1f;
+    height: 1.5rem;
+    line-height: 1.5rem;
+    font-size: 0.2rem;
+    text-align:center;
+    color:#333;
+  }
   header {
     @include fj;
+    justify-content: flex-end;
     align-items: center;
     padding: 0.3rem 0.6rem;
-    background-color: #eceff1;
+    background-color:  #fff;
     svg {
       @include wh(0.6rem, 0.6rem);
       vertical-align: middle;
@@ -1384,6 +1464,7 @@ export default {
     background-color: #fff;
     max-height: 20rem;
     overflow-y: auto;
+    padding-bottom: 0.8rem;
     .cart_food_li {
       @include fj;
       padding: 0.6rem 0.5rem;
@@ -1419,7 +1500,7 @@ export default {
         }
         svg {
           @include wh(0.9rem, 0.9rem);
-          fill: #3190e8;
+          fill: #ffba1f;
         }
         .specs_reduce_icon {
           fill: #999;
@@ -1457,8 +1538,8 @@ export default {
       border-bottom: 0.12rem solid #fff;
     }
     .activity_show {
-      color: #3190e8;
-      border-color: #3190e8;
+      color: #ffba1f;
+      border-color: #ffba1f;
     }
   }
 }
@@ -1531,7 +1612,7 @@ export default {
       color: #aaa;
     }
     .tagActivity {
-      background-color: #3190e8;
+      background-color: #ffba1f;
       color: #fff;
     }
   }
@@ -1651,8 +1732,8 @@ export default {
         margin-bottom: 0.2rem;
       }
       .specs_activity {
-        border-color: #3199e8;
-        color: #3199e8;
+        border-color: #ffba1f;
+        color: #ffba1f;
       }
     }
   }
@@ -1679,7 +1760,7 @@ export default {
     }
     .specs_addto_cart {
       @include wh(4rem, 1.3rem);
-      background-color: #3199e8;
+      background-color: #ffba1f;
       border: 1px;
       border-radius: 0.15rem;
       @include sc(0.6rem, #fff);
@@ -1709,7 +1790,7 @@ export default {
 
   svg {
     @include wh(0.9rem, 0.9rem);
-    fill: #3190e8;
+    fill: #ffba1f;
   }
 }
 .fade-enter-active,

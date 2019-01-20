@@ -113,7 +113,7 @@
         }
         svg{
             @include wh(.9rem, .9rem);
-            fill: #3190e8;
+            fill:#ffba1f;
         }
         .specs_reduce_icon{
             fill: #999;

@@ -72,10 +72,10 @@
         }
     }
 </script>
-  
+
 <style lang="scss" scoped>
     @import 'src/style/mixin';
-  
+
     .rating_page{
         position: fixed;
         top: 0;
@@ -106,11 +106,11 @@
                 span{
                     @include sc(.6rem, #333);
                     padding: .3rem .6rem;
-                    border: 0.025rem solid #3190e8;
+                    border: 0.025rem solid #ffba1f;
                     border-left: 0;
                 }
                 .first{
-                    border-left: 0.025rem solid #3190e8;
+                    border-left: 0.025rem solid #ffba1f;
                     border-top-left-radius: .2rem;
                     border-bottom-left-radius: .2rem;
                 }
@@ -120,7 +120,7 @@
                 }
                 .choosed{
                     color: #fff;
-                    background-color: #3190e8;
+                    background-color: #ffba1f;
                 }
             }
         }
@@ -146,5 +146,5 @@
         line-height: 1.8rem;
         border-radius: 0.2rem;
     }
-    
+
 </style>

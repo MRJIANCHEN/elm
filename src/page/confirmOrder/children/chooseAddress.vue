@@ -16,11 +16,11 @@
                             <header>
                                 <span>{{item.name}}</span>
                                 <span>{{item.sex == 1? '先生' : '女士'}}</span>
-                                <span>{{item.phone}}</span>   
+                                <span>{{item.phone}}</span>
                             </header>
                             <div class="address_detail ellipsis">
                                 <span v-if="item.tag" :style="{backgroundColor: iconColor(item.tag)}">{{item.tag}}</span>
-                                <p>{{item.address_detail}}</p>   
+                                <p>{{item.address_detail}}</p>
                             </div>
                         </div>
                     </li>
@@ -36,11 +36,11 @@
                                 <header>
                                     <span>{{item.name}}</span>
                                     <span>{{item.sex == 1? '先生' : '女士'}}</span>
-                                    <span>{{item.phone}}</span>   
+                                    <span>{{item.phone}}</span>
                                 </header>
                                 <div class="address_detail ellipsis">
                                     <span v-if="item.tag" :style="{backgroundColor: '#ccc', color: '#fff'}">{{item.tag}}</span>
-                                    <p>{{item.address_detail}}</p>   
+                                    <p>{{item.address_detail}}</p>
                                 </div>
                             </div>
                         </li>
@@ -51,7 +51,7 @@
         <alert-tip v-if="showAlert" @closeTip="showAlert = false" :alertText="alertText"></alert-tip>
         <transition name="router-slid" mode="out-in">
             <router-view></router-view>
-        </transition>  
+        </transition>
     </div>
 </template>
 
@@ -117,18 +117,18 @@
                         }
                     })
                     // this.$nextTick(() => {
-                    //     new BScroll('#scroll_section', {  
+                    //     new BScroll('#scroll_section', {
                     //         deceleration: 0.003,
                     //         bounce: true,
                     //         swipeTime: 1800,
-                    //     }); 
+                    //     });
                     // })
                 }
             },
             iconColor(name){
                 switch(name){
                     case '公司': return '#4cd964';
-                    case '学校': return '#3190e8';
+                    case '学校': return '#ffba1f';
                 }
             },
             //选择地址
@@ -149,10 +149,10 @@
         }
     }
 </script>
-  
+
 <style lang="scss" scoped>
     @import 'src/style/mixin';
-  
+
     .rating_page{
         position: fixed;
         top: 0;

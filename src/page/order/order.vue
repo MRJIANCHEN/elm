@@ -39,7 +39,7 @@
         <transition name="router-slid" mode="out-in">
             <router-view></router-view>
         </transition>
- 
+
     </div>
 </template>
 
@@ -59,7 +59,7 @@
       data(){
             return{
                 orderList: null, //订单列表
-                offset: 0, 
+                offset: 0,
                 preventRepeat: false,  //防止重复获取
                 showLoading: true, //显示加载动画
                 imgBaseUrl
@@ -131,10 +131,10 @@
         }
     }
 </script>
-  
+
 <style lang="scss" scoped>
     @import 'src/style/mixin';
-    
+
     .order_page{
         background-color: #f1f1f1;
         margin-bottom: 1.95rem;
@@ -200,8 +200,8 @@
                     text-align: right;
                     line-height: 1.6rem;
                     .buy_again{
-                        @include sc(.55rem, #3190e8);
-                        border: 0.025rem solid #3190e8;
+                        @include sc(.55rem, #ffba1f);
+                        border: 0.025rem solid #ffba1f;
                         padding: .1rem .2rem;
                         border-radius: .15rem;
                     }

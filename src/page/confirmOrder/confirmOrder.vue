@@ -253,7 +253,7 @@
             iconColor(name){
                 switch(name){
                     case '公司': return '#4cd964';
-                    case '学校': return '#3190e8';
+                    case '学校': return '#ffba1f';
                 }
             },
             //确认订单

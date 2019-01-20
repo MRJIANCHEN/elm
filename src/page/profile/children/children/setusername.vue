@@ -122,7 +122,7 @@
         }
         .reset{
             width:100%;
-            background:#3199e8;
+            background:#ffba1f;
             button{
                 display:block;
                 width:100%;
