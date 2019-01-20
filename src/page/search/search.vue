@@ -2,11 +2,10 @@
   	<div class="paddingTop search_page">
         <head-top head-title="搜索" goBack="true"></head-top>
         <form class="search_form">
-            <input type="search" name="search" placeholder="请输入商家或美食名称" class="search_input" v-model="searchValue" @input="checkInput">
+            <input type="search" name="search" placeholder="请输入商品名称" class="search_input" v-model="searchValue" @input="checkInput">
             <input type="submit" name="submit" class="search_submit" @click.prevent="searchTarget('')">
         </form>
         <section v-if="restaurantList.length">
-            <h4 class="title_restaurant">商家</h4>
             <ul class="list_container">
                 <router-link :to="{path:'/shop', query:{id:item.id}}" tag="li" v-for="item in restaurantList" :key="item.id" class="list_li">
                     <section class="item_left">
@@ -50,13 +49,11 @@
             <footer class="clear_history" @click="clearAllHistory">清空搜索历史</footer>
         </section>
         <div class="search_none" v-if="emptyResult">很抱歉！无搜索结果</div>
-        <foot-guide></foot-guide>
     </div>
 </template>
 
 <script>
 import headTop from '../../components/header/head'
-import footGuide from '../../components/footer/footGuide'
 import {searchRestaurant} from '../../service/getData'
 import {imgBaseUrl} from '../../config/env'
 import {getStore, setStore} from '../../config/mUtils'
@@ -85,7 +82,6 @@ export default {
     },
     components:{
         headTop,
-        footGuide,
     },
     methods:{
         //点击提交按钮，搜索结果并显示，同时将搜索内容存入历史记录

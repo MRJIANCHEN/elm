@@ -112,7 +112,7 @@
             align-items: center;
         }
         svg{
-            @include wh(.9rem, .9rem);
+            @include wh(1.3rem, 1.3rem);
             fill:#ffba1f;
         }
         .specs_reduce_icon{

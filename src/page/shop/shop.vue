@@ -2,11 +2,13 @@
   <div>
     <div id="head-top">
       <div class="wrap">
-          <svg width="0.9rem" height="0.9rem" xmlns="http://www.w3.org/2000/svg" version="1.1">
-            <circle cx="8" cy="8" r="7" stroke="rgb(255,255,255)" stroke-width="1" fill="none"></circle>
-            <line x1="14" y1="14" x2="20" y2="20" style="stroke:rgb(255,255,255);stroke-width:2"></line>
-          </svg>
-        <input type="text" v-model="search" placeholder="search">
+        <svg width="0.9rem" height="0.9rem" xmlns="http://www.w3.org/2000/svg" version="1.1">
+          <circle cx="8" cy="8" r="7" stroke="rgb(255,255,255)" stroke-width="1" fill="none"></circle>
+          <line x1="14" y1="14" x2="20" y2="20" style="stroke:rgb(255,255,255);stroke-width:2"></line>
+        </svg>
+        <router-link :to="'/search/geohash'" class="link_search" slot="search">
+	    	 <input type="text" v-model="search" placeholder="search">
+    		</router-link>
         <i class="update"></i>
       </div>
     </div>
@@ -57,58 +59,32 @@
                     :key="foodindex"
                     class="menu_detail_list"
                   >
-                    <router-link
-                      :to="{path: 'shop/foodDetail', query:{image_path:foods.image_path, description: foods.description, month_sales: foods.month_sales, name: foods.name, rating: foods.rating, rating_count: foods.rating_count, satisfy_rate: foods.satisfy_rate, foods, shopId}}"
-                      tag="div"
-                      class="menu_detail_link"
-                    >
+                    <div class="menu_detail_link">
                       <section class="menu_food_img">
                         <img :src="imgBaseUrl + foods.image_path">
                       </section>
                       <section class="menu_food_description">
                         <h3 class="food_description_head">
-                          <strong class="description_foodname">{{foods.name}}</strong>
-                          <ul v-if="foods.attributes.length" class="attributes_ul">
-                            <li
-                              v-if="attribute"
-                              v-for="(attribute, foodindex) in foods.attributes"
-                              :key="foodindex"
-                              :style="{color: '#' + attribute.icon_color,borderColor:'#' + attribute.icon_color}"
-                              :class="{attribute_new: attribute.icon_name == '新'}"
-                            >
-                              <p
-                                :style="{color: attribute.icon_name == '新'? '#fff' : '#' + attribute.icon_color}"
-                              >{{attribute.icon_name == '新'? '新品':attribute.icon_name}}</p>
-                            </li>
-                          </ul>
+                          <p class="description_foodname">{{foods.name}}</p>
+                          <footer class="menu_detail_footer">
+                            <section class="food_price">
+                              <span>¥</span>
+                              <span>{{foods.specfoods[0].price}}</span>
+                              <span class="old-price" v-if="foods.sale">{{foods.oldPrice}}</span>
+                            </section>
+                            <buy-cart
+                              :shopId="shopId"
+                              :foods="foods"
+                              @moveInCart="listenInCart"
+                              @showChooseList="showChooseList"
+                              @showReduceTip="showReduceTip"
+                              @showMoveDot="showMoveDotFun"
+                            ></buy-cart>
+                          </footer>
+                          <span :class="{attribute_new: foods.sale !== 'sale'}"></span>
                         </h3>
-                        <p class="food_description_content">{{foods.description}}</p>
-                        <p class="food_description_sale_rating">
-                          <span>月售{{foods.month_sales}}份</span>
-                          <span>好评率{{foods.satisfy_rate}}%</span>
-                        </p>
-                        <p v-if="foods.activity" class="food_activity">
-                          <span
-                            :style="{color: '#' + foods.activity.image_text_color,borderColor:'#' +foods.activity.icon_color}"
-                          >{{foods.activity.image_text}}</span>
-                        </p>
                       </section>
-                    </router-link>
-                    <footer class="menu_detail_footer">
-                      <section class="food_price">
-                        <span>¥</span>
-                        <span>{{foods.specfoods[0].price}}</span>
-                        <span v-if="foods.specifications.length">起</span>
-                      </section>
-                      <buy-cart
-                        :shopId="shopId"
-                        :foods="foods"
-                        @moveInCart="listenInCart"
-                        @showChooseList="showChooseList"
-                        @showReduceTip="showReduceTip"
-                        @showMoveDot="showMoveDotFun"
-                      ></buy-cart>
-                    </footer>
+                    </div>
                   </section>
                 </li>
               </ul>
@@ -141,17 +117,13 @@
             </section>
             <section class="gotopay" :class="{gotopay_acitvity: minimumOrderAmount <= 0}">
               <span class="gotopay_button_style" v-if="minimumOrderAmount > 0">送货上门</span>
-              <router-link
-                :to="{path:'/confirmOrder', query:{geohash, shopId}}"
-                class="gotopay_button_style"
-                v-else
-              >送货上门</router-link>
+              <span class="gotopay_button_style" @click="payOlder" v-else>送货上门</span>
             </section>
           </section>
           <transition name="toggle-cart">
             <section class="cart_food_list" v-show="showCartList&&cartFoodList.length">
               <div class="remind">送货上门另收2元服务费</div>
-              <header>       
+              <header>
                 <div @click="clearCart">
                   <svg>
                     <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#cart-remove"></use>
@@ -198,74 +170,19 @@
               @click="toggleCartList"
             ></div>
           </transition>
-        </section>
-      </transition>
-      <transition name="fade-choose">
-        <section class="rating_container" id="ratingContainer" v-show="changeShowType =='rating'">
-          <section v-load-more="loaderMoreRating" type="2">
-            <section>
-              <header class="rating_header">
-                <section class="rating_header_left">
-                  <p>{{shopDetailData.rating}}</p>
-                  <p>综合评价</p>
-                  <p>高于周边商家{{(ratingScoresData.compare_rating*100).toFixed(1)}}%</p>
-                </section>
-                <section class="rating_header_right">
-                  <p>
-                    <span>服务态度</span>
-                    <rating-star :rating="ratingScoresData.service_score"></rating-star>
-                    <span class="rating_num">{{ratingScoresData.service_score.toFixed(1)}}</span>
-                  </p>
-                  <p>
-                    <span>菜品评价</span>
-                    <rating-star :rating="ratingScoresData.food_score"></rating-star>
-                    <span class="rating_num">{{ratingScoresData.food_score.toFixed(1)}}</span>
-                  </p>
-                  <p>
-                    <span>送达时间</span>
-                    <span class="delivery_time">{{shopDetailData.order_lead_time}}分钟</span>
-                  </p>
-                </section>
-              </header>
-              <ul class="tag_list_ul">
-                <li
-                  v-for="(item, index) in ratingTagsList"
-                  :key="index"
-                  :class="{unsatisfied: item.unsatisfied, tagActivity: ratingTageIndex == index}"
-                  @click="changeTgeIndex(index, item.name)"
-                >{{item.name}}({{item.count}})</li>
-              </ul>
-              <ul class="rating_list_ul">
-                <li v-for="(item, index) in ratingList" :key="index" class="rating_list_li">
-                  <img :src="getImgPath(item.avatar)" class="user_avatar">
-                  <section class="rating_list_details">
-                    <header>
-                      <section class="username_star">
-                        <p class="username">{{item.username}}</p>
-                        <p class="star_desc">
-                          <rating-star :rating="item.rating_star"></rating-star>
-                          <span class="time_spent_desc">{{item.time_spent_desc}}</span>
-                        </p>
-                      </section>
-                      <time class="rated_at">{{item.rated_at}}</time>
-                    </header>
-                    <ul class="food_img_ul">
-                      <li v-for="(item, index) in item.item_ratings" :key="index">
-                        <img :src="getImgPath(item.image_hash)" v-if="item.image_hash">
-                      </li>
-                    </ul>
-                    <ul class="food_name_ul">
-                      <li
-                        v-for="(item, index) in item.item_ratings"
-                        :key="index"
-                        class="ellipsis"
-                      >{{item.food_name}}</li>
-                    </ul>
-                  </section>
-                </li>
-              </ul>
-            </section>
-          </section>
+          <transition name="fade">
+            <div
+              class="screen_cover"
+              style="padding:0 0.8rem;"
+              v-show="commitOrder"
+            >
+            <div class="addr-wrap">
+              <div class="tit">提交订单 <span class="close">X</span></div> 
+              <div class="addr-remind">上门需支付2元的送货上门费用</div>
+              
+            </div>
+            </div>
+          </transition>
         </section>
       </transition>
     </section>
@@ -360,6 +277,7 @@ export default {
   data() {
     return {
       geohash: "", //geohash位置信息
+      commitOrder:false,
       swiperOption: {
         autoplay: true, //可选选项，自动滑动
         loop: true
@@ -370,9 +288,7 @@ export default {
         "/static/home1.png",
         "/static/home1.png"
       ],
-      imgArr: ["/static/home1.png", "/static/home1.png", "/static/home1.png"],
-      marquee:
-        "加入购物车，所需7个参数，商铺id，食品分类id，食品id，食品规格id，食品名字，食品价格，食品规格", //滚动文字
+      marquee:"加入购物车，所需7个参数，商铺id，食品分类id，食品id，食品规格id，食品名字，食品价格，食品规格", 
       shopId: null, //商店id值
       showLoading: true, //显示加载动画
       changeShowType: "food", //切换显示商品或者评价
@@ -475,6 +391,9 @@ export default {
       "CLEAR_CART",
       "RECORD_SHOPDETAIL"
     ]),
+    payOlder(){//点击送货
+      this.commitOrder=!this.commitOrder;
+    },
     //初始化时获取基本数据
     async initData() {
       if (!this.latitude) {
@@ -907,17 +826,20 @@ export default {
       width: 0.7rem;
       height: 0.7rem;
     }
-    .update{
-      width:0.9rem;
+    .update {
+      width: 0.9rem;
       height: 0.9rem;
-      @include bis('../../../static/timg.png');
+      @include bis("../../../static/timg.png");
     }
-    input{
-      width:80%;
+    a{
+      width: 80%;
+    }
+    input {
+      width: 100%;
       height: 1.4rem;
       border: none;
       outline: none;
-      background: #8E8E93;
+      background: #8e8e93;
     }
   }
 }
@@ -1128,6 +1050,16 @@ export default {
         @include wh(0.5rem, 0.6rem);
       }
       span {
+        line-height: 1.2rem;
+        max-height: 2.4rem;
+        word-break: break-all;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        /* autoprefixer: off */
+        -webkit-box-orient: vertical;
+        /* autoprefixer: on */
+        -webkit-line-clamp: 2;
+        overflow: hidden;
         @include sc(0.6rem, #666);
       }
       .category_num {
@@ -1149,7 +1081,7 @@ export default {
       background-color: #fff;
       span:nth-of-type(1) {
         font-weight: bold;
-        @include sc(0.6rem, #FFBA1F);
+        @include sc(0.6rem, #ffba1f);
       }
     }
   }
@@ -1222,14 +1154,13 @@ export default {
         .menu_food_img {
           margin-right: 0.4rem;
           img {
-            @include wh(2rem, 2rem);
+            @include wh(2.9rem, 2.9rem);
             display: block;
           }
         }
         .menu_food_description {
           width: 100%;
           .food_description_head {
-            @include fj;
             margin-bottom: 0.2rem;
             .description_foodname {
               @include sc(0.7rem, #333);
@@ -1251,21 +1182,12 @@ export default {
               }
               .attribute_new {
                 position: absolute;
-                top: 0;
-                left: 0;
-                background-color: #4cd964;
-                @include wh(2rem, 2rem);
-                display: flex;
-                align-items: flex-end;
-                transform: rotate(-45deg) translate(-0.1rem, -1.5rem);
+                top: 0.3rem;
+                left: 2.4rem;
+                width: 1.2rem;
+                height: 1.4rem;
+                @include bis("../../../static/sale-flag.png");
                 border: none;
-                border-radius: 0;
-                p {
-                  @include sc(0.4rem, #fff);
-                  text-align: center;
-                  flex: 1;
-                  transform: scale(0.8) translate(0.1rem, -0.1rem);
-                }
               }
             }
           }
@@ -1294,7 +1216,6 @@ export default {
         }
       }
       .menu_detail_footer {
-        margin-left: 2.4rem;
         font-size: 0;
         margin-top: 0.3rem;
         @include fj;
@@ -1308,37 +1229,37 @@ export default {
           }
           span:nth-of-type(2) {
             @include sc(0.7rem, #f60);
-            font-weight: bold;
             margin-right: 0.3rem;
           }
           span:nth-of-type(3) {
             @include sc(0.5rem, #666);
+            text-decoration: line-through;
           }
         }
       }
     }
   }
 }
-.message{
-  position:absolute;
+.message {
+  position: absolute;
   right: 0.3rem;
   bottom: 0.5rem;
   height: 2.4rem;
-  width:1.6rem;
-  display:flex;
+  width: 1.6rem;
+  display: flex;
   flex-direction: column;
-  justify-content: flex-start; 
+  justify-content: flex-start;
   align-items: center;
-  i{
+  i {
     width: 1.3rem;
     height: 1.2rem;
-    @include bis('../../../static/message.png');
+    @include bis("../../../static/message.png");
   }
-  span{
-    color:#333;
+  span {
+    color: #333;
     font-size: 12px;
     line-height: 1rem;
-    text-align:center;
+    text-align: center;
   }
 }
 .buy_cart_container {
@@ -1348,7 +1269,7 @@ export default {
   display: flex;
   @include borderRadius(1rem);
   @include cl;
-  left:47%;
+  left: 47%;
   @include wh(12rem, 2rem);
   .cart_icon_num {
     flex: 1;
@@ -1368,11 +1289,11 @@ export default {
         position: absolute;
         top: -0.25rem;
         right: -0.25rem;
-        background-color: #FF0303;
+        background-color: #ff0303;
         line-height: 0.7rem;
         text-align: center;
         border-radius: 50%;
-        border: 0.025rem solid #FF0303;
+        border: 0.025rem solid #ff0303;
         min-width: 0.7rem;
         height: 0.7rem;
         @include sc(0.5rem, #fff);
@@ -1383,7 +1304,7 @@ export default {
       animation: mymove 0.5s ease-in-out;
     }
     .cart_icon_activity {
-      background-color: #FFBA1F;
+      background-color: #ffba1f;
     }
     .cart_num {
       @include ct;
@@ -1423,32 +1344,31 @@ export default {
   }
 }
 .cart_food_list {
-
   position: fixed;
   width: 100%;
   padding-bottom: 2rem;
   z-index: 12;
   bottom: 0;
   left: 0;
-     border-top-left-radius: 0.8rem;
-    border-top-right-radius: 0.8rem;
+  border-top-left-radius: 0.8rem;
+  border-top-right-radius: 0.8rem;
   background-color: #fff;
-  .remind{
+  .remind {
     border-top-left-radius: 0.8rem;
     border-top-right-radius: 0.8rem;
     background: #ffba1f;
     height: 1.5rem;
     line-height: 1.5rem;
     font-size: 0.2rem;
-    text-align:center;
-    color:#333;
+    text-align: center;
+    color: #333;
   }
   header {
     @include fj;
     justify-content: flex-end;
     align-items: center;
     padding: 0.3rem 0.6rem;
-    background-color:  #fff;
+    background-color: #fff;
     svg {
       @include wh(0.6rem, 0.6rem);
       vertical-align: middle;
