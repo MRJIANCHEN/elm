@@ -7,8 +7,8 @@
           <line x1="14" y1="14" x2="20" y2="20" style="stroke:rgb(255,255,255);stroke-width:2"></line>
         </svg>
         <router-link :to="'/search/geohash'" class="link_search" slot="search">
-	    	 <input type="text" v-model="search" placeholder="search">
-    		</router-link>
+          <input type="text" v-model="search" placeholder="search">
+        </router-link>
         <i class="update"></i>
       </div>
     </div>
@@ -171,16 +171,55 @@
             ></div>
           </transition>
           <transition name="fade">
-            <div
-              class="screen_cover"
-              style="padding:0 0.8rem;"
-              v-show="commitOrder"
-            >
-            <div class="addr-wrap">
-              <div class="tit">提交订单 <span class="close">X</span></div> 
-              <div class="addr-remind">上门需支付2元的送货上门费用</div>
-              
-            </div>
+            <div class="screen_cover" style="z-index:10000" v-show="commitOrder">
+              <div class="addr-wrap">
+                <div class="tit">提交订单
+                  <span  @click="payOlder" class="close">X</span>
+                </div>
+                <div class="addr-remind">上门需支付2元的送货上门费用</div>
+                <div class="addr-detail">
+                  <h3>共计{{12}}件商品，总价{{16.6}}元</h3>
+                  <div class="liitle">
+                    <span style="color:red;">*</span>送货地址
+                  </div>
+                  <div class="detail-wrap">
+                    <div class="input-mode">
+                      <input type="text">
+                    </div>栋
+                    <div style="width:1rem;" class="input-mode">
+                      <input type="text">
+                    </div>单元
+                    <div style="width:1rem;" class="input-mode">
+                      <input type="text">
+                    </div>号
+                  </div>
+
+                  <div class="liitle">
+                    <span style="color:red;">*</span>联系电话
+                  </div>
+                  <div class="detail-wrap">
+                    <div style="width:100%" class="input-mode">
+                      <input type="text">
+                    </div>
+                    <div class="confirm">为保证送货质量，请准确填写以上信息</div>
+                  </div>
+
+                  <div class="liitle">备注</div>
+                  <div class="detail-wrap">
+                    <div style="width:100%" class="input-mode">
+                      <input type="text" placeholder="非必填">
+                    </div>
+                  </div>
+
+                  <div class="button">下单
+                    <span class="pay-type">(货到付款)</span>
+                  </div>
+                  <div style="padding-left:1rem;">
+                    <div class="confirm">*送货上门后当面支付费用</div>
+                    <div class="confirm">*支持微信、支付宝、现金，不支持刷卡</div>
+                  </div>
+                </div>
+              </div>
             </div>
           </transition>
         </section>
@@ -277,7 +316,7 @@ export default {
   data() {
     return {
       geohash: "", //geohash位置信息
-      commitOrder:false,
+      commitOrder: false,
       swiperOption: {
         autoplay: true, //可选选项，自动滑动
         loop: true
@@ -288,7 +327,8 @@ export default {
         "/static/home1.png",
         "/static/home1.png"
       ],
-      marquee:"加入购物车，所需7个参数，商铺id，食品分类id，食品id，食品规格id，食品名字，食品价格，食品规格", 
+      marquee:
+        "加入购物车，所需7个参数，商铺id，食品分类id，食品id，食品规格id，食品名字，食品价格，食品规格",
       shopId: null, //商店id值
       showLoading: true, //显示加载动画
       changeShowType: "food", //切换显示商品或者评价
@@ -391,8 +431,9 @@ export default {
       "CLEAR_CART",
       "RECORD_SHOPDETAIL"
     ]),
-    payOlder(){//点击送货
-      this.commitOrder=!this.commitOrder;
+    payOlder() {
+      //点击送货
+      this.commitOrder = !this.commitOrder;
     },
     //初始化时获取基本数据
     async initData() {
@@ -831,7 +872,7 @@ export default {
       height: 0.9rem;
       @include bis("../../../static/timg.png");
     }
-    a{
+    a {
       width: 80%;
     }
     input {
@@ -840,6 +881,80 @@ export default {
       border: none;
       outline: none;
       background: #8e8e93;
+    }
+  }
+}
+.addr-wrap{
+  width: 90%;
+  padding: 0.8rem;
+  @include center;
+  background: #fff;
+  .tit{
+    @include sc(0.8rem,#333);
+    text-align:center;
+    line-height: 1.5rem;
+    .close{
+      @include wh(1.5rem,1.5rem);
+      float: right;
+    }
+  }
+  .addr-remind{
+    text-indent: 0.4rem;
+    line-height: 1.7rem;
+    background: #FFBA1F;
+    color: #404040;
+    font-size: 0.6rem;
+  }
+  .addr-detail{
+    padding: 0.2rem 1rem;
+    h3{
+      @include sc(0.8rem,#333);
+      text-align: center;
+      font-weight: 600;
+      line-height: 1.5rem;
+    }
+    .liitle{
+      padding-top:0.6rem;
+      @include sc(0.6rem,#404040);
+      line-height:1rem;
+    }
+    .detail-wrap{
+      display: flex;
+      display: -webkit-flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      align-items: center;
+      line-height: 1.2rem;
+      @include sc(0.7rem,#333);
+      .input-mode{
+        border-bottom: 1px solid #959595;
+        line-height: 1.2rem;
+        margin: 0 0.2rem;
+        input{
+          outline: none;
+          border: none;
+          @include sc(0.6rem,#333);
+        } 
+      }
+    }
+    .confirm{
+      @include sc(12px,#959595);
+      line-height: 1rem;
+    }
+    .button{
+      width:10rem;
+      height: 2rem;
+      margin: 0.9rem auto 0.2rem;
+      line-height: 2rem;
+      padding-left: 2.4rem;
+      border-radius: 1rem;
+      text-align: center;
+      background: #FFBA1F;
+      @include sc(0.7rem,#333);
+      .pay-type{
+      @include sc(0.5rem,#333);
+      }
     }
   }
 }
