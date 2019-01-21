@@ -1,6 +1,10 @@
  <template>
   <div>
-    <div id="head-top">
+    <div v-if="!true" style="width:100%;min-height:100%;background:#EBEBEB">
+      <img style="width:100%;height:100%;" src="../../../static/closed.png" alt="">
+    </div>
+    <div v-else>
+      <div id="head-top">
       <div class="wrap">
         <svg width="0.9rem" height="0.9rem" xmlns="http://www.w3.org/2000/svg" version="1.1">
           <circle cx="8" cy="8" r="7" stroke="rgb(255,255,255)" stroke-width="1" fill="none"></circle>
@@ -90,7 +94,7 @@
               </ul>
             </section>
           </section>
-          <section class="message">
+          <section @click="showMsg" class="message">
             <i></i>
             <span>反馈</span>
           </section>
@@ -170,6 +174,34 @@
               @click="toggleCartList"
             ></div>
           </transition>
+           <transition name="fade">
+            <div class="screen_cover"
+              v-show="showOpinion"
+            >
+                    <div class="addr-wrap">
+                <div class="tit">填写意见
+                  <span  @click="showMsg(true)" class="close">X</span>
+                </div>
+                <div class="addr-detail">
+                  <div class="liitle">
+                    <span style="color:red;">*</span>内容
+                  </div>
+                  <div class="textarea" style="height:7rem;background:#F1F1F1;">
+                    <textarea v-model.trim="textareaDetail" style="background:#F1F1F1;line-height:1.6rem;text-indent:0.4rem;" placeholder="货品需求，意见建议等"></textarea>
+                  </div> 
+                  <div class="liitle">
+                    联系电话
+                  </div>
+                  <div class="detail-wrap">
+                    <div style="width:100%;border:none;background:#F1F1F1;margin:0" class="input-mode">
+                      <input style="background:#F1F1F1;" v-model.trim="telephone" type="text">
+                    </div>
+                  </div>
+                 <div @click="submitOption" class="button" style="padding-left:0">提交</div>             
+                </div>
+              </div>
+            </div>
+          </transition>
           <transition name="fade">
             <div class="screen_cover" style="z-index:10000" v-show="commitOrder">
               <div class="addr-wrap">
@@ -178,19 +210,19 @@
                 </div>
                 <div class="addr-remind">上门需支付2元的送货上门费用</div>
                 <div class="addr-detail">
-                  <h3>共计{{12}}件商品，总价{{16.6}}元</h3>
+                  <h3>共计{{totalNum}}件商品，总价{{totalPrice}}元</h3>
                   <div class="liitle">
                     <span style="color:red;">*</span>送货地址
                   </div>
                   <div class="detail-wrap">
-                    <div class="input-mode">
-                      <input type="text">
+                    <div style="width:1.8rem;" class="input-mode">
+                      <input v-model.trim="housing" type="text">
                     </div>栋
-                    <div style="width:1rem;" class="input-mode">
-                      <input type="text">
+                    <div style="width:1.8rem;" class="input-mode">
+                      <input v-model.trim="unit" type="text">
                     </div>单元
-                    <div style="width:1rem;" class="input-mode">
-                      <input type="text">
+                    <div style="width:1.8rem;" class="input-mode">
+                      <input v-model.trim="roomNumber" type="text">
                     </div>号
                   </div>
 
@@ -199,7 +231,7 @@
                   </div>
                   <div class="detail-wrap">
                     <div style="width:100%" class="input-mode">
-                      <input type="text">
+                      <input v-model.trim="telephone" type="text">
                     </div>
                     <div class="confirm">为保证送货质量，请准确填写以上信息</div>
                   </div>
@@ -207,11 +239,11 @@
                   <div class="liitle">备注</div>
                   <div class="detail-wrap">
                     <div style="width:100%" class="input-mode">
-                      <input type="text" placeholder="非必填">
+                      <input v-model.trim="remarks" type="text" placeholder="非必填">
                     </div>
                   </div>
 
-                  <div class="button">下单
+                  <div @click="confirmOlder" class="button">下单
                     <span class="pay-type">(货到付款)</span>
                   </div>
                   <div style="padding-left:1rem;">
@@ -290,6 +322,7 @@
     <transition name="router-slid" mode="out-in">
       <router-view></router-view>
     </transition>
+    </div>
   </div>
 </template>
 
@@ -301,7 +334,9 @@ import {
   foodMenu,
   getRatingList,
   ratingScores,
-  ratingTags
+  ratingTags,
+  placeOrders,
+  opinion
 } from "src/service/getData";
 import loading from "src/components/common/loading";
 import buyCart from "src/components/common/buyCart";
@@ -316,7 +351,14 @@ export default {
   data() {
     return {
       geohash: "", //geohash位置信息
+      showOpinion:false,//意见反馈
       commitOrder: false,
+      housing:'',//小区地址
+      unit:'',//单元
+      roomNumber:'',//户号
+      telephone:'',
+      remarks:'',//备注
+      textareaDetail:'',
       swiperOption: {
         autoplay: true, //可选选项，自动滑动
         loop: true
@@ -431,9 +473,20 @@ export default {
       "CLEAR_CART",
       "RECORD_SHOPDETAIL"
     ]),
-    payOlder() {
-      //点击送货
+    showMsg(type){//显示意见反馈
+      this.textareaDetail=type?"":this.textareaDetail;
+      this.showOpinion = !this.showOpinion;
+    },
+    payOlder() { //点击送货
       this.commitOrder = !this.commitOrder;
+    },
+    confirmOlder(){//发送订单
+     let orderRes= placeOrders(user_id, cart_id, address_id, description, entities, geohash, sig);
+     
+    },
+    async submitOption(){//提交反馈意见
+      let ops= await opinion(this.textareaDetail,this.telephone)
+
     },
     //初始化时获取基本数据
     async initData() {
@@ -580,6 +633,7 @@ export default {
                     this.cartFoodList[cartFoodNum].price = foodItem.price;
                     this.cartFoodList[cartFoodNum].name = foodItem.name;
                     this.cartFoodList[cartFoodNum].specs = foodItem.specs;
+                    this.cartFoodList[cartFoodNum].image_path = foodItem.image_path;
                     cartFoodNum++;
                   }
                 }

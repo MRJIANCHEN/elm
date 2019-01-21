@@ -234,6 +234,15 @@ export const checkout = (geohash, entities, shopid) => fetch('/v1/carts/checkout
 	restaurant_id: shopid,
 }, 'POST');
 
+/**
+ * 反馈意见
+ */
+
+export const opinion=(text,tel) =>fetch('',{
+	opinion:text,
+	tel:tel
+},'POST')
+
 
 /**
  * 获取快速备注列表
