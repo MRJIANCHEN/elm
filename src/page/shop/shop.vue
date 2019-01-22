@@ -371,7 +371,7 @@ export default {
       ],
       marquee:
         "加入购物车，所需7个参数，商铺id，食品分类id，食品id，食品规格id，食品名字，食品价格，食品规格",
-      shopId: null, //商店id值
+      shopId: 1, //商店id值
       showLoading: true, //显示加载动画
       changeShowType: "food", //切换显示商品或者评价
       shopDetailData: null, //商铺详情
@@ -409,7 +409,7 @@ export default {
   },
   created() {
     this.geohash = this.$route.query.geohash;
-    this.shopId = this.$route.query.id;
+    this.shopId = 1;
     this.INIT_BUYCART();
   },
   mounted() {
@@ -446,7 +446,7 @@ export default {
     //还差多少元起送，为负数时显示去结算按钮
     minimumOrderAmount: function() {
       if (this.shopDetailData) {
-        return this.shopDetailData.float_minimum_order_amount - this.totalPrice;
+return this.shopDetailData.float_minimum_order_amount - this.totalPrice;
       } else {
         return null;
       }

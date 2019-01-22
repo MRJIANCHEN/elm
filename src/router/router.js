@@ -47,8 +47,6 @@ const find = r => require.ensure([], () => r(require('../page/find/find')), 'fin
 const download = r => require.ensure([], () => r(require('../page/download/download')), 'download')
 
 
-
-
 export default [{
     path: '/',
     component: App, //顶层路由，对应index.html
@@ -56,12 +54,12 @@ export default [{
         //地址为空时跳转home页面
         {
             path: '',
-            redirect: '/home'
+            redirect: '/shop'
         },
         //首页城市列表页
         {
             path: '/home',
-            component: home
+            component: shop
         },
         //当前选择城市页
         {
@@ -81,7 +79,7 @@ export default [{
         },
         //搜索页
         {
-            path: '/search/:geohash',
+            path: '/search',
             component: search
         },
         //商铺详情页
